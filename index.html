@@ -1,62 +1,457 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skylitho Communications Company</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Font Awesome for Hamburger Icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skylitho Communications</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <nav>
-        <!-- Hamburger Menu Icon -->
-        <div class="hamburger" onclick="toggleMenu()">
-            <i class="fas fa-bars"></i>
-        </div>
-        <!-- Menu -->
-        <ul class="menu">
-            <li class="dropdown">
-                <a href="#" class="dropbtn">Company</a>
-                <div class="dropdown-content">
-                    <a href="links/about.html">About</a>
-                    <a href="#">Services</a>
-                </div>
-            </li>
-            <li><a href="links/projects.html">Projects</a></li>
-        </ul>
-        <!-- search-bar -->
-        <div class="search-container">
-                <input type="text" placeholder="Search..." class="search-bar">
-                <button type="submit" class="search-button">Search</button>
-            </div>
-            <ul class="menu centered-menu">
-                
-            </ul>
-        </div>
+ 
+  <!-- ══ NAVIGATION ══ -->
+  <header class="nav-wrap">
+    <nav class="nav container">
+      <a href="#" class="nav-logo">
+        <span class="logo-icon">✦</span>
+        Skylitho<span>.</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#machines">Browse</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="#contact" class="btn btn-primary">Get a Quote</a>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </nav>
-    <!--background image-->
-    <section id="home" class="hero">
-        <h2>Welcome to <br><h1>SKYLITHO</h1></h2>
-        <p></p>
-        <a href="machines/buying.html" class="cta-button">Buy Machines</a>
-        <a href="machines/selling.html" class="cta-button">Sell Machines</a>
-    </section>
-    
-    <div class="social-media-icons">
-        <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
-        <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
-        <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
-        <a href="https://linkedin.com" target="https://www.linkedin.com/in/joseph-masambu-7503b63a/"><i class="fab fa-linkedin-in"></i></a>
+  </header>
+ 
+  <!-- ══ HERO ══ -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-text fade-up">
+        <p class="hero-eyebrow">Pre-Owned Printing Equipment · Worldwide</p>
+        <h1 class="hero-title">
+          Quality Machinery.<br />
+          <em>Clear Communication.</em>
+        </h1>
+        <p class="hero-desc">
+          Skylitho Communications connects print professionals across the globe with rigorously inspected pre-owned offset, packaging, and finishing equipment — backed by expert support at every step.
+        </p>
+        <div class="hero-actions">
+          <a href="#machines" class="btn btn-primary">View Inventory</a>
+          <a href="#contact" class="btn btn-outline">Sell a Machine</a>
+        </div>
+      </div>
+      <div class="hero-visual fade-up delay-1">
+        <div class="hero-card">
+          <div class="hero-card-badge">Featured</div>
+          <div class="hero-card-img">
+            <div class="hero-card-graphic">
+              <div class="graphic-circle c1"></div>
+              <div class="graphic-circle c2"></div>
+              <div class="graphic-label">KBA</div>
+            </div>
+          </div>
+          <div class="hero-card-body">
+            <p class="card-brand">KBA · Sheet-Fed Offset</p>
+            <h3 class="card-title">Rapida RA 106 X-8 L</h3>
+            <div class="card-specs">
+              <div class="spec"><span>Year</span><strong>2020</strong></div>
+              <div class="spec"><span>Condition</span><strong>Very Good</strong></div>
+              <div class="spec"><span>Sheets</span><strong>80M</strong></div>
+              <div class="spec"><span>Output</span><strong>18,000 sph</strong></div>
+            </div>
+            <a href="#contact" class="btn btn-primary btn-sm">Request Info</a>
+          </div>
+        </div>
+      </div>
     </div>
-
-    
-     
-    <script>
-        function toggleMenu() {
-            const menu = document.querySelector('.menu');
-            menu.classList.toggle('active');
-        }
-    </script>
+    <div class="hero-stats container">
+      <div class="stat fade-up delay-2">
+        <strong>60<sup>+</sup></strong>
+        <span>Countries Served</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat fade-up delay-3">
+        <strong>3,200<sup>+</sup></strong>
+        <span>Machines Traded</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat fade-up delay-4">
+        <strong>14</strong>
+        <span>Languages Spoken</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat fade-up delay-5">
+        <strong>10<sup>+</sup></strong>
+        <span>Years of Experience</span>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- ══ MACHINES ══ -->
+  <section class="machines" id="machines">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <p class="section-tag">Latest Offers</p>
+          <h2 class="section-title">Current Inventory</h2>
+        </div>
+        <a href="#" class="link-arrow">View all listings <span>→</span></a>
+      </div>
+      <div class="machines-grid">
+ 
+        <article class="machine-card" data-avail="New">
+          <div class="mc-img">
+            <div class="mc-graphic kba">KBA</div>
+            <span class="mc-badge new">New</span>
+          </div>
+          <div class="mc-body">
+            <p class="mc-brand">KBA · Sheet-Fed Offset</p>
+            <h3 class="mc-title">Rapida RA 106-8</h3>
+            <ul class="mc-specs">
+              <li><span>Year</span><strong>2018</strong></li>
+              <li><span>Condition</span><strong>Good</strong></li>
+              <li><span>Sheets</span><strong>248M</strong></li>
+              <li><span>Max Format</span><strong>740 × 1060 mm</strong></li>
+            </ul>
+            <a href="#contact" class="btn btn-outline btn-sm">Request Info</a>
+          </div>
+        </article>
+ 
+        <article class="machine-card" data-avail="Available">
+          <div class="mc-img">
+            <div class="mc-graphic hd">HD</div>
+            <span class="mc-badge available">Available</span>
+          </div>
+          <div class="mc-body">
+            <p class="mc-brand">Heidelberg · Sheet-Fed Offset</p>
+            <h3 class="mc-title">CD 102-4</h3>
+            <ul class="mc-specs">
+              <li><span>Year</span><strong>2007</strong></li>
+              <li><span>Condition</span><strong>Good</strong></li>
+              <li><span>Sheets</span><strong>495M</strong></li>
+              <li><span>Max Format</span><strong>720 × 1020 mm</strong></li>
+            </ul>
+            <a href="#contact" class="btn btn-outline btn-sm">Request Info</a>
+          </div>
+        </article>
+ 
+        <article class="machine-card" data-avail="New">
+          <div class="mc-img">
+            <div class="mc-graphic kba">KBA</div>
+            <span class="mc-badge new">New</span>
+          </div>
+          <div class="mc-body">
+            <p class="mc-brand">KBA · Sheet-Fed Offset</p>
+            <h3 class="mc-title">Rapida RA 105-5 LV</h3>
+            <ul class="mc-specs">
+              <li><span>Year</span><strong>2008</strong></li>
+              <li><span>Condition</span><strong>Good</strong></li>
+              <li><span>Sheets</span><strong>250M</strong></li>
+              <li><span>Output</span><strong>18,000 sph</strong></li>
+            </ul>
+            <a href="#contact" class="btn btn-outline btn-sm">Request Info</a>
+          </div>
+        </article>
+ 
+        <article class="machine-card" data-avail="Available">
+          <div class="mc-img">
+            <div class="mc-graphic polar">POL</div>
+            <span class="mc-badge available">Available</span>
+          </div>
+          <div class="mc-body">
+            <p class="mc-brand">Polar · Cutting Equipment</p>
+            <h3 class="mc-title">Polar 92 ED</h3>
+            <ul class="mc-specs">
+              <li><span>Year</span><strong>1996</strong></li>
+              <li><span>Condition</span><strong>Very Good</strong></li>
+              <li><span>Cuts</span><strong>121M</strong></li>
+              <li><span>Max Width</span><strong>920 mm</strong></li>
+            </ul>
+            <a href="#contact" class="btn btn-outline btn-sm">Request Info</a>
+          </div>
+        </article>
+ 
+        <article class="machine-card" data-avail="New">
+          <div class="mc-img">
+            <div class="mc-graphic polar">POL</div>
+            <span class="mc-badge new">New</span>
+          </div>
+          <div class="mc-body">
+            <p class="mc-brand">Polar · Cutting Equipment</p>
+            <h3 class="mc-title">Polar 137 XT</h3>
+            <ul class="mc-specs">
+              <li><span>Year</span><strong>2009</strong></li>
+              <li><span>Condition</span><strong>Good</strong></li>
+              <li><span>Cuts</span><strong>1.9M</strong></li>
+              <li><span>Max Width</span><strong>1370 mm</strong></li>
+            </ul>
+            <a href="#contact" class="btn btn-outline btn-sm">Request Info</a>
+          </div>
+        </article>
+ 
+        <article class="machine-card" data-avail="Available">
+          <div class="mc-img">
+            <div class="mc-graphic komori">KMR</div>
+            <span class="mc-badge available">Available</span>
+          </div>
+          <div class="mc-body">
+            <p class="mc-brand">Komori · Sheet-Fed Offset</p>
+            <h3 class="mc-title">GL 640 C Hybrid</h3>
+            <ul class="mc-specs">
+              <li><span>Year</span><strong>2016</strong></li>
+              <li><span>Condition</span><strong>Excellent</strong></li>
+              <li><span>Sheets</span><strong>30M</strong></li>
+              <li><span>Output</span><strong>16,500 sph</strong></li>
+            </ul>
+            <a href="#contact" class="btn btn-outline btn-sm">Request Info</a>
+          </div>
+        </article>
+ 
+      </div>
+    </div>
+  </section>
+ 
+  <!-- ══ SERVICES ══ -->
+  <section class="services" id="services">
+    <div class="container">
+      <div class="section-header centered">
+        <p class="section-tag">What We Offer</p>
+        <h2 class="section-title">Our Services</h2>
+        <p class="section-sub">From sourcing to installation, we handle every step of the process — so you can focus on what matters: printing.</p>
+      </div>
+      <div class="services-grid">
+        <div class="service-item">
+          <div class="service-icon">⇌</div>
+          <h3>Trading</h3>
+          <p>We monitor global markets daily, sourcing the right machines at the right price through our exclusive network and internal database.</p>
+        </div>
+        <div class="service-item">
+          <div class="service-icon">⚙</div>
+          <h3>Installation</h3>
+          <p>Every machine is dismantled with care, shipped securely, and professionally reinstalled — ready to run from day one.</p>
+        </div>
+        <div class="service-item">
+          <div class="service-icon">↗</div>
+          <h3>Logistics</h3>
+          <p>We partner with trusted freight carriers worldwide to deliver your equipment safely, on time, every time.</p>
+        </div>
+        <div class="service-item">
+          <div class="service-icon">◎</div>
+          <h3>Inspection</h3>
+          <p>Our engineers conduct rigorous on-site assessments to verify the mechanical status and print quality before any purchase.</p>
+        </div>
+        <div class="service-item">
+          <div class="service-icon">◈</div>
+          <h3>Consulting</h3>
+          <p>We build custom acquisition plans aligned with your production goals, budget, and long-term business vision.</p>
+        </div>
+        <div class="service-item">
+          <div class="service-icon">✦</div>
+          <h3>Engineering</h3>
+          <p>Our technicians restore and recondition pre-owned presses to near-new performance — replacing every worn component.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- ══ BRANDS ══ -->
+  <section class="brands">
+    <div class="container">
+      <p class="brands-label">Brands We Trade</p>
+      <div class="brands-row">
+        <span>Heidelberg</span>
+        <span>KBA Rapida</span>
+        <span>Komori</span>
+        <span>Polar</span>
+        <span>Bobst</span>
+        <span>Müller Martini</span>
+        <span>Stahl</span>
+        <span>Ryobi</span>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- ══ ABOUT ══ -->
+  <section class="about" id="about">
+    <div class="container about-inner">
+      <div class="about-visual">
+        <div class="about-card">
+          <div class="about-graphic">
+            <div class="ag-ring r1"></div>
+            <div class="ag-ring r2"></div>
+            <div class="ag-ring r3"></div>
+            <span class="ag-label">✦</span>
+          </div>
+        </div>
+        <div class="about-stat-card">
+          <strong>60+</strong>
+          <span>Countries with active clients</span>
+        </div>
+      </div>
+      <div class="about-text">
+        <p class="section-tag">Who We Are</p>
+        <h2 class="section-title">Built on Trust,<br />Driven by Expertise</h2>
+        <p>Skylitho Communications is an international company formed by a multilingual team of over 14 nationalities. We bring decades of hands-on experience in the print machinery market to every deal.</p>
+        <p>Our customers are our priority. Whether you're buying your first pre-owned press or managing a fleet of machines, we're here to ensure the process is simple, transparent, and profitable.</p>
+        <div class="about-features">
+          <div class="about-feature">
+            <span class="feature-dot"></span>
+            Multilingual team — we speak your language
+          </div>
+          <div class="about-feature">
+            <span class="feature-dot"></span>
+            100% transparent transactions
+          </div>
+          <div class="about-feature">
+            <span class="feature-dot"></span>
+            Post-sale technical support included
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- ══ CONTACT ══ -->
+  <section class="contact" id="contact">
+    <div class="container contact-inner">
+      <div class="contact-info">
+        <p class="section-tag">Get in Touch</p>
+        <h2 class="section-title">Let's Find Your<br />Perfect Machine</h2>
+        <p class="contact-desc">Tell us what you're looking for and a specialist will reach out with tailored options and pricing. No obligation, no pressure.</p>
+        <div class="contact-details">
+          <div class="cd-item">
+            <div class="cd-icon">☎</div>
+            <div>
+              <p class="cd-label">Phone</p>
+              <p class="cd-val">+34 662 12 65 24</p>
+            </div>
+          </div>
+          <div class="cd-item">
+            <div class="cd-icon">✉</div>
+            <div>
+              <p class="cd-label">Email</p>
+              <p class="cd-val">info@skylitho.com</p>
+            </div>
+          </div>
+          <div class="cd-item">
+            <div class="cd-icon">◎</div>
+            <div>
+              <p class="cd-label">Global Presence</p>
+              <p class="cd-val">60+ Countries Worldwide</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <form class="contact-form" id="contactForm" novalidate>
+        <div class="form-row">
+          <div class="field">
+            <label for="name">Full Name</label>
+            <input id="name" type="text" placeholder="Jane Smith" required />
+          </div>
+          <div class="field">
+            <label for="email">Email Address</label>
+            <input id="email" type="email" placeholder="jane@company.com" required />
+          </div>
+        </div>
+        <div class="field">
+          <label for="company">Company</label>
+          <input id="company" type="text" placeholder="Your company name" />
+        </div>
+        <div class="field">
+          <label for="machine">Machine of Interest</label>
+          <input id="machine" type="text" placeholder="e.g. Heidelberg CD 102" />
+        </div>
+        <div class="field">
+          <label for="message">Message</label>
+          <textarea id="message" rows="4" placeholder="Describe your requirements..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Send Message</button>
+        <p class="form-note" id="formMsg"></p>
+      </form>
+    </div>
+  </section>
+ 
+  <!-- ══ NEWSLETTER ══ -->
+  <section class="newsletter">
+    <div class="container newsletter-inner">
+      <div>
+        <h3>Stay ahead of new arrivals</h3>
+        <p>Get the latest listings and exclusive offers delivered to your inbox.</p>
+      </div>
+      <form class="nl-form" id="nlForm">
+        <input type="email" placeholder="Your email address" required />
+        <button type="submit" class="btn btn-primary">Subscribe</button>
+      </form>
+    </div>
+  </section>
+ 
+  <!-- ══ FOOTER ══ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="#" class="nav-logo footer-logo">
+            <span class="logo-icon">✦</span>Skylitho<span>.</span>
+          </a>
+          <p>Worldwide supplier of pre-owned printing machinery, trusted by professionals across 60+ countries.</p>
+          <div class="footer-socials">
+            <a href="#" aria-label="LinkedIn">in</a>
+            <a href="#" aria-label="Instagram">ig</a>
+            <a href="#" aria-label="YouTube">yt</a>
+            <a href="#" aria-label="WhatsApp">wa</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Equipment</h4>
+          <ul>
+            <li><a href="#">Offset Printing</a></li>
+            <li><a href="#">Pre-Press</a></li>
+            <li><a href="#">Packaging</a></li>
+            <li><a href="#">Binding & Finishing</a></li>
+            <li><a href="#">Cutting Machines</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Our Services</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">General Conditions</a></li>
+            <li><a href="#">Bank Details</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">Shipping Info</a></li>
+            <li><a href="#">Letter of Credit</a></li>
+            <li><a href="#">Machine Guides</a></li>
+            <li><a href="#">Industry News</a></li>
+            <li><a href="#">FAQ</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Skylitho Communications. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Use</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+ 
+  <script src="script.js"></script>
 </body>
 </html>
