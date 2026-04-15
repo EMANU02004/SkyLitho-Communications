@@ -25,6 +25,7 @@
       </ul>
       <div class="nav-actions">
         <a href="#contact" class="btn btn-primary">Get a Quote</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
         <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
           <span></span><span></span><span></span>
         </button>
@@ -49,29 +50,7 @@
           <a href="#contact" class="btn btn-outline">Sell a Machine</a>
         </div>
       </div>
-      <div class="hero-visual fade-up delay-1">
-        <div class="hero-card">
-          <div class="hero-card-badge">Featured</div>
-          <div class="hero-card-img">
-            <div class="hero-card-graphic">
-              <div class="graphic-circle c1"></div>
-              <div class="graphic-circle c2"></div>
-              <div class="graphic-label">KBA</div>
-            </div>
-          </div>
-          <div class="hero-card-body">
-            <p class="card-brand">KBA · Sheet-Fed Offset</p>
-            <h3 class="card-title">Rapida RA 106 X-8 L</h3>
-            <div class="card-specs">
-              <div class="spec"><span>Year</span><strong>2020</strong></div>
-              <div class="spec"><span>Condition</span><strong>Very Good</strong></div>
-              <div class="spec"><span>Sheets</span><strong>80M</strong></div>
-              <div class="spec"><span>Output</span><strong>18,000 sph</strong></div>
-            </div>
-            <a href="#contact" class="btn btn-primary btn-sm">Request Info</a>
-          </div>
-        </div>
-      </div>
+
     </div>
     <div class="hero-stats container">
       <div class="stat fade-up delay-2">
@@ -102,7 +81,7 @@
       <div class="section-header">
         <div>
           <p class="section-tag">Latest Offers</p>
-          <h2 class="section-title">Current Inventory</h2>
+          <h2 class="section-title">Machines Available</h2>
         </div>
         <a href="#" class="link-arrow">View all listings</a>
       </div>
@@ -231,11 +210,6 @@
       <div class="services-grid">
         <div class="service-item">
           <div class="service-icon"></div>
-          <h3>Trading</h3>
-          <p>We monitor global markets daily, sourcing the right machines at the right price through our exclusive network and internal database.</p>
-        </div>
-        <div class="service-item">
-          <div class="service-icon"></div>
           <h3>Installation</h3>
           <p>Every machine is dismantled with care, shipped securely, and professionally reinstalled — ready to run from day one.</p>
         </div>
@@ -289,7 +263,6 @@
             <div class="ag-ring r1"></div>
             <div class="ag-ring r2"></div>
             <div class="ag-ring r3"></div>
-            <span class="ag-label"></span>
           </div>
         </div>
         <div class="about-stat-card">
@@ -332,14 +305,14 @@
             <div class="cd-icon"></div>
             <div>
               <p class="cd-label">Phone</p>
-              <p class="cd-val">+34 662 12 65 24</p>
+              <p class="cd-val">+254 720767974</p>
             </div>
           </div>
           <div class="cd-item">
             <div class="cd-icon"></div>
             <div>
               <p class="cd-label">Email</p>
-              <p class="cd-val">info@skylitho.com</p>
+              <p class="cd-val">skylitho@gmail.com</p>
             </div>
           </div>
           <div class="cd-item">
@@ -376,20 +349,6 @@
         </div>
         <button type="submit" class="btn btn-primary btn-full">Send Message</button>
         <p class="form-note" id="formMsg"></p>
-      </form>
-    </div>
-  </section>
- 
-  <!-- ══ NEWSLETTER ══ -->
-  <section class="newsletter">
-    <div class="container newsletter-inner">
-      <div>
-        <h3>Stay ahead of new arrivals</h3>
-        <p>Get the latest listings and exclusive offers delivered to your inbox.</p>
-      </div>
-      <form class="nl-form" id="nlForm">
-        <input type="email" placeholder="Your email address" required />
-        <button type="submit" class="btn btn-primary">Subscribe</button>
       </form>
     </div>
   </section>
@@ -552,6 +511,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
