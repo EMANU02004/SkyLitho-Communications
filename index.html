@@ -15,7 +15,6 @@
   <header class="nav-wrap">
     <nav class="nav container">
       <a href="#" class="nav-logo">
-        <span class="logo-icon">✦</span>
         Skylitho<span>.</span>
       </a>
       <ul class="nav-links" id="navLinks">
@@ -105,7 +104,7 @@
           <p class="section-tag">Latest Offers</p>
           <h2 class="section-title">Current Inventory</h2>
         </div>
-        <a href="#" class="link-arrow">View all listings <span>→</span></a>
+        <a href="#" class="link-arrow">View all listings</a>
       </div>
       <div class="machines-grid">
  
@@ -231,32 +230,32 @@
       </div>
       <div class="services-grid">
         <div class="service-item">
-          <div class="service-icon">⇌</div>
+          <div class="service-icon"></div>
           <h3>Trading</h3>
           <p>We monitor global markets daily, sourcing the right machines at the right price through our exclusive network and internal database.</p>
         </div>
         <div class="service-item">
-          <div class="service-icon">⚙</div>
+          <div class="service-icon"></div>
           <h3>Installation</h3>
           <p>Every machine is dismantled with care, shipped securely, and professionally reinstalled — ready to run from day one.</p>
         </div>
         <div class="service-item">
-          <div class="service-icon">↗</div>
+          <div class="service-icon"></div>
           <h3>Logistics</h3>
           <p>We partner with trusted freight carriers worldwide to deliver your equipment safely, on time, every time.</p>
         </div>
         <div class="service-item">
-          <div class="service-icon">◎</div>
+          <div class="service-icon"></div>
           <h3>Inspection</h3>
           <p>Our engineers conduct rigorous on-site assessments to verify the mechanical status and print quality before any purchase.</p>
         </div>
         <div class="service-item">
-          <div class="service-icon">◈</div>
+          <div class="service-icon"></div>
           <h3>Consulting</h3>
           <p>We build custom acquisition plans aligned with your production goals, budget, and long-term business vision.</p>
         </div>
         <div class="service-item">
-          <div class="service-icon">✦</div>
+          <div class="service-icon"></div>
           <h3>Engineering</h3>
           <p>Our technicians restore and recondition pre-owned presses to near-new performance — replacing every worn component.</p>
         </div>
@@ -290,7 +289,7 @@
             <div class="ag-ring r1"></div>
             <div class="ag-ring r2"></div>
             <div class="ag-ring r3"></div>
-            <span class="ag-label">✦</span>
+            <span class="ag-label"></span>
           </div>
         </div>
         <div class="about-stat-card">
@@ -330,21 +329,21 @@
         <p class="contact-desc">Tell us what you're looking for and a specialist will reach out with tailored options and pricing. No obligation, no pressure.</p>
         <div class="contact-details">
           <div class="cd-item">
-            <div class="cd-icon">☎</div>
+            <div class="cd-icon"></div>
             <div>
               <p class="cd-label">Phone</p>
               <p class="cd-val">+34 662 12 65 24</p>
             </div>
           </div>
           <div class="cd-item">
-            <div class="cd-icon">✉</div>
+            <div class="cd-icon"></div>
             <div>
               <p class="cd-label">Email</p>
               <p class="cd-val">info@skylitho.com</p>
             </div>
           </div>
           <div class="cd-item">
-            <div class="cd-icon">◎</div>
+            <div class="cd-icon"></div>
             <div>
               <p class="cd-label">Global Presence</p>
               <p class="cd-val">60+ Countries Worldwide</p>
@@ -401,7 +400,7 @@
       <div class="footer-top">
         <div class="footer-brand">
           <a href="#" class="nav-logo footer-logo">
-            <span class="logo-icon">✦</span>Skylitho<span>.</span>
+            Skylitho<span>.</span>
           </a>
           <p>Worldwide supplier of pre-owned printing machinery, trusted by professionals across 60+ countries.</p>
           <div class="footer-socials">
@@ -447,11 +446,112 @@
         <div class="footer-legal">
           <a href="#">Privacy Policy</a>
           <a href="#">Terms of Use</a>
+          <button class="admin-trigger" id="adminTrigger" aria-label="Admin">&#9679;</button>
         </div>
       </div>
     </div>
   </footer>
  
+  <!-- ══ ADMIN PANEL ══ -->
+  <div id="adminOverlay" class="admin-overlay hidden">
+    <div class="admin-modal">
+      <div class="admin-header">
+        <h3>Admin — Add Machine</h3>
+        <button class="admin-close" id="adminClose" aria-label="Close">&times;</button>
+      </div>
+      <form id="adminForm">
+        <div class="form-row">
+          <div class="field">
+            <label for="a-brand">Brand</label>
+            <input id="a-brand" type="text" placeholder="e.g. Heidelberg" required />
+          </div>
+          <div class="field">
+            <label for="a-category">Category</label>
+            <input id="a-category" type="text" placeholder="e.g. Sheet-Fed Offset" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="a-model">Model</label>
+            <input id="a-model" type="text" placeholder="e.g. CD 102-4" required />
+          </div>
+          <div class="field">
+            <label for="a-year">Year</label>
+            <input id="a-year" type="number" placeholder="e.g. 2015" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="a-condition">Condition</label>
+            <select id="a-condition" required>
+              <option value="">Select condition</option>
+              <option>Excellent</option>
+              <option>Very Good</option>
+              <option>Good</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="a-badge">Badge</label>
+            <select id="a-badge">
+              <option value="available">Available</option>
+              <option value="new">New</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="a-spec1-label">Spec Label (e.g. Sheets)</label>
+            <input id="a-spec1-label" type="text" placeholder="Sheets" />
+          </div>
+          <div class="field">
+            <label for="a-spec1-val">Spec Value</label>
+            <input id="a-spec1-val" type="text" placeholder="e.g. 120M" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="a-spec2-label">Spec Label (e.g. Output)</label>
+            <input id="a-spec2-label" type="text" placeholder="Output" />
+          </div>
+          <div class="field">
+            <label for="a-spec2-val">Spec Value</label>
+            <input id="a-spec2-val" type="text" placeholder="e.g. 15,000 sph" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Machine Images</label>
+          <div class="img-upload-zone" id="imgUploadZone">
+            <input type="file" id="a-images" accept="image/*" multiple />
+            <p>Click or drag &amp; drop images here</p>
+          </div>
+          <div class="img-preview-grid" id="imgPreviewGrid"></div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Add Machine</button>
+        <p class="form-note" id="adminMsg"></p>
+      </form>
+
+      <div class="admin-list" id="adminList"></div>
+    </div>
+  </div>
+
+  <!-- Admin login modal -->
+  <div id="adminLoginOverlay" class="admin-overlay hidden">
+    <div class="admin-modal admin-modal--sm">
+      <div class="admin-header">
+        <h3>Admin Login</h3>
+        <button class="admin-close" id="adminLoginClose" aria-label="Close">&times;</button>
+      </div>
+      <form id="adminLoginForm">
+        <div class="field">
+          <label for="adminPass">Password</label>
+          <input id="adminPass" type="password" placeholder="Enter admin password" required />
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:8px">Login</button>
+        <p class="form-note" id="loginMsg"></p>
+      </form>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
