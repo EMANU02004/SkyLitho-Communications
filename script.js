@@ -133,53 +133,6 @@ contactForm.addEventListener('submit', (e) => {
   }, 1200);
 });
 
-// ── EmailJS config ───────────────────────
-const EMAILJS_PUBLIC_KEY  = '<YOUR_PUBLIC_KEY>';
-const EMAILJS_SERVICE_ID  = '<YOUR_SERVICE_ID>';
-const EMAILJS_TEMPLATE_ID = '<YOUR_TEMPLATE_ID>';
-emailjs.init(EMAILJS_PUBLIC_KEY);
-
-// ── Newsletter Form ───────────────────────
-const nlForm = document.getElementById('nlForm');
-
-nlForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const input = nlForm.querySelector('input[type="email"]');
-  const btn   = nlForm.querySelector('button');
-
-  if (!isValidEmail(input.value.trim())) {
-    input.style.outline = '2px solid #fca5a5';
-    return;
-  }
-
-  input.style.outline = '';
-  btn.disabled        = true;
-  btn.textContent     = 'Subscribing…';
-
-  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-    subscriber_email: input.value.trim(),
-  })
-  .then(() => {
-    btn.textContent      = 'Subscribed!';
-    btn.style.background = '#124d8c';
-    input.value          = '';
-    setTimeout(() => {
-      btn.disabled         = false;
-      btn.textContent      = 'Subscribe';
-      btn.style.background = '';
-    }, 3000);
-  })
-  .catch(() => {
-    btn.disabled    = false;
-    btn.textContent = 'Try again';
-    input.style.outline = '2px solid #fca5a5';
-    setTimeout(() => {
-      btn.textContent     = 'Subscribe';
-      input.style.outline = '';
-    }, 3000);
-  });
-});
-
 // ── Active nav link on scroll ─────────────
 const sections   = document.querySelectorAll('section[id]');
 const navAnchors = document.querySelectorAll('.nav-links a[href^="#"]');
@@ -300,8 +253,21 @@ adminClose.addEventListener('click', () => {
 });
 
 // ── Storage ───────────────────────────────
+const DEFAULT_MACHINES = [
+  { id:'d1', brand:'KBA',       category:'Sheet-Fed Offset',  model:'Rapida RA 106-8',   year:'2018', condition:'Good',      badge:'new',       spec1Label:'Sheets',     spec1Val:'248M',        spec2Label:'Max Format', spec2Val:'740 × 1060 mm', images:[], unavailable:false },
+  { id:'d2', brand:'Heidelberg',category:'Sheet-Fed Offset',  model:'CD 102-4',          year:'2007', condition:'Good',      badge:'available', spec1Label:'Sheets',     spec1Val:'495M',        spec2Label:'Max Format', spec2Val:'720 × 1020 mm', images:[], unavailable:false },
+  { id:'d3', brand:'KBA',       category:'Sheet-Fed Offset',  model:'Rapida RA 105-5 LV',year:'2008', condition:'Good',      badge:'new',       spec1Label:'Sheets',     spec1Val:'250M',        spec2Label:'Output',     spec2Val:'18,000 sph',    images:[], unavailable:false },
+  { id:'d4', brand:'Polar',     category:'Cutting Equipment', model:'Polar 92 ED',       year:'1996', condition:'Very Good', badge:'available', spec1Label:'Cuts',       spec1Val:'121M',        spec2Label:'Max Width',  spec2Val:'920 mm',        images:[], unavailable:false },
+  { id:'d5', brand:'Polar',     category:'Cutting Equipment', model:'Polar 137 XT',      year:'2009', condition:'Good',      badge:'new',       spec1Label:'Cuts',       spec1Val:'1.9M',        spec2Label:'Max Width',  spec2Val:'1370 mm',       images:[], unavailable:false },
+  { id:'d6', brand:'Komori',    category:'Sheet-Fed Offset',  model:'GL 640 C Hybrid',   year:'2016', condition:'Excellent', badge:'available', spec1Label:'Sheets',     spec1Val:'30M',         spec2Label:'Output',     spec2Val:'16,500 sph',    images:[], unavailable:false },
+];
+
 function getAdminMachines() {
-  return JSON.parse(localStorage.getItem('adminMachines') || '[]');
+  // Seed defaults on first load
+  if (!localStorage.getItem('adminMachines')) {
+    localStorage.setItem('adminMachines', JSON.stringify(DEFAULT_MACHINES));
+  }
+  return JSON.parse(localStorage.getItem('adminMachines'));
 }
 function saveAdminMachines(machines) {
   localStorage.setItem('adminMachines', JSON.stringify(machines));
@@ -311,9 +277,10 @@ function saveAdminMachines(machines) {
 function renderPublicMachines() {
   const machines = getAdminMachines();
   const grid = document.querySelector('.machines-grid');
-  grid.querySelectorAll('.admin-injected').forEach(el => el.remove());
+  grid.innerHTML = '';
 
   machines.forEach(m => {
+    if (m.unavailable) return;
     const spec1 = m.spec1Label && m.spec1Val
       ? `<li><span>${m.spec1Label}</span><strong>${m.spec1Val}</strong></li>` : '';
     const spec2 = m.spec2Label && m.spec2Val
@@ -337,12 +304,14 @@ function renderPublicMachines() {
     }
 
     const card = document.createElement('article');
-    card.className = 'machine-card admin-injected';
+    card.className = 'machine-card';
     card.dataset.avail = m.badge === 'new' ? 'New' : 'Available';
+    const machineIndex = machines.indexOf(m);
     card.innerHTML = `
       <div class="mc-img">
         ${imgAreaHTML}
         <span class="mc-badge ${m.badge}">${m.badge === 'new' ? 'New' : 'Available'}</span>
+        ${buildFavBtn(machineIndex)}
       </div>
       <div class="mc-body">
         <p class="mc-brand">${m.brand} · ${m.category}</p>
@@ -357,6 +326,8 @@ function renderPublicMachines() {
     grid.appendChild(card);
 
     if (m.images && m.images.length > 1) initSlideshow(card);
+
+    card.querySelector('.fav-btn').addEventListener('click', () => toggleFavourite(machineIndex));
 
     card.style.opacity   = '0';
     card.style.transform = 'translateY(16px)';
@@ -388,21 +359,72 @@ function initSlideshow(card) {
 // ── Render admin list ─────────────────────
 function renderAdminList() {
   const machines = getAdminMachines();
-  if (machines.length === 0) { adminList.innerHTML = ''; return; }
-  adminList.innerHTML = `<h4>Added Machines (${machines.length})</h4>`;
+  if (machines.length === 0) {
+    adminList.innerHTML = '<p style="color:var(--ink-soft);font-size:14px;margin-top:16px;">No machines added yet.</p>';
+    return;
+  }
+
+  adminList.innerHTML = `
+    <div class="admin-list-header">
+      <h4>Manage Machines (${machines.length})</h4>
+    </div>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Machine</th>
+          <th>Year</th>
+          <th>Condition</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="adminTableBody"></tbody>
+    </table>`;
+
+  const tbody = document.getElementById('adminTableBody');
   machines.forEach((m, i) => {
     const thumb = m.images && m.images.length > 0
-      ? `<img src="${m.images[0]}" class="admin-thumb" alt="" />` : '';
-    const item = document.createElement('div');
-    item.className = 'admin-machine-item';
-    item.innerHTML = `
-      ${thumb}
-      <div><strong>${m.brand} ${m.model}</strong><span> · ${m.year} · ${m.condition}</span></div>
-      <button class="admin-delete" data-index="${i}">Remove</button>`;
-    adminList.appendChild(item);
+      ? `<img src="${m.images[0]}" class="admin-thumb" alt="" />` : '<div class="admin-thumb-placeholder">' + m.brand.substring(0,3).toUpperCase() + '</div>';
+
+    const isUnavailable = m.unavailable === true;
+    const statusLabel   = isUnavailable ? 'Not Available' : 'Available';
+    const statusClass   = isUnavailable ? 'status-unavailable' : 'status-available';
+    const toggleLabel   = isUnavailable ? 'Mark Available' : 'Mark Unavailable';
+
+    const tr = document.createElement('tr');
+    tr.className = isUnavailable ? 'row-unavailable' : '';
+    tr.innerHTML = `
+      <td>${thumb}</td>
+      <td>
+        <strong>${m.brand} ${m.model}</strong>
+        <span class="admin-category">${m.category}</span>
+      </td>
+      <td>${m.year}</td>
+      <td>${m.condition}</td>
+      <td><span class="admin-status ${statusClass}">${statusLabel}</span></td>
+      <td class="admin-actions-cell">
+        <button class="admin-toggle-avail" data-index="${i}">${toggleLabel}</button>
+        <button class="admin-delete" data-index="${i}">Delete</button>
+      </td>`;
+    tbody.appendChild(tr);
   });
-  adminList.querySelectorAll('.admin-delete').forEach(btn => {
+
+  // Toggle availability
+  tbody.querySelectorAll('.admin-toggle-avail').forEach(btn => {
     btn.addEventListener('click', () => {
+      const machines = getAdminMachines();
+      machines[Number(btn.dataset.index)].unavailable = !machines[Number(btn.dataset.index)].unavailable;
+      saveAdminMachines(machines);
+      renderAdminList();
+      renderPublicMachines();
+    });
+  });
+
+  // Delete
+  tbody.querySelectorAll('.admin-delete').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!confirm('Delete this machine?')) return;
       const machines = getAdminMachines();
       machines.splice(Number(btn.dataset.index), 1);
       saveAdminMachines(machines);
@@ -445,3 +467,125 @@ adminForm.addEventListener('submit', (e) => {
 
 // Init
 renderPublicMachines();
+
+// ── Favourites ──────────────────────────
+function getFavourites() {
+  return JSON.parse(localStorage.getItem('skylithoFavs') || '[]');
+}
+function saveFavourites(favs) {
+  localStorage.setItem('skylithoFavs', JSON.stringify(favs));
+}
+
+function isFavourited(machineId) {
+  return getFavourites().includes(String(machineId));
+}
+
+function toggleFavourite(machineId) {
+  const favs = getFavourites();
+  const id   = String(machineId);
+  const idx  = favs.indexOf(id);
+  if (idx === -1) favs.push(id);
+  else favs.splice(idx, 1);
+  saveFavourites(favs);
+  renderPublicMachines();
+  renderFavourites();
+  updateFavNav();
+}
+
+function updateFavNav() {
+  const count    = getFavourites().length;
+  const navCount = document.getElementById('favNavCount');
+  navCount.textContent = count > 0 ? count : '';
+  const heartPath = document.querySelector('#favNavLink svg path');
+  heartPath.setAttribute('fill', count > 0 ? '#e11d48' : 'none');
+  document.getElementById('favNavLink').style.color = count > 0 ? '#e11d48' : '';
+}
+
+function buildFavBtn(machineId) {
+  const active = isFavourited(machineId);
+  return `<button class="fav-btn${active ? ' fav-active' : ''}" data-id="${machineId}" aria-label="${active ? 'Remove from favourites' : 'Add to favourites'}">
+    <svg viewBox="0 0 24 24" fill="${active ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+    </svg>
+  </button>`;
+}
+
+function renderFavourites() {
+  const favs     = getFavourites();
+  const machines = getAdminMachines();
+  const content  = document.getElementById('favModalContent');
+
+  if (favs.length === 0) {
+    content.innerHTML = '<p style="color:var(--ink-soft);font-size:14px;padding:16px 0;">No favourites yet. Click the heart on any machine to save it here.</p>';
+    return;
+  }
+
+  content.innerHTML = '<div class="fav-modal-actions"><button class="btn btn-outline btn-sm" id="clearFavourites">Clear All</button></div><div class="fav-modal-grid" id="favouritesGrid"></div>';
+  document.getElementById('clearFavourites').addEventListener('click', () => {
+    saveFavourites([]);
+    renderPublicMachines();
+    renderFavourites();
+    updateFavNav();
+  });
+
+  const grid = document.getElementById('favouritesGrid');
+  const favMachines = machines.filter((m, i) => favs.includes(String(i)));
+
+  favMachines.forEach(m => {
+    const origIndex = machines.indexOf(m);
+    const spec1 = m.spec1Label && m.spec1Val ? `<li><span>${m.spec1Label}</span><strong>${m.spec1Val}</strong></li>` : '';
+    const spec2 = m.spec2Label && m.spec2Val ? `<li><span>${m.spec2Label}</span><strong>${m.spec2Val}</strong></li>` : '';
+    const imgAreaHTML = m.images && m.images.length > 0
+      ? `<div class="mc-slideshow">${m.images.map((src, i) => `<img class="mc-slide${i===0?' active':''}" src="${src}" alt="${m.model}" />`).join('')}</div>`
+      : `<div class="mc-graphic">${m.brand.substring(0,3).toUpperCase()}</div>`;
+
+    const card = document.createElement('article');
+    card.className = 'machine-card' + (m.unavailable ? ' mc-unavailable' : '');
+    card.innerHTML = `
+      <div class="mc-img">
+        ${imgAreaHTML}
+        <span class="mc-badge ${m.badge}">${m.badge === 'new' ? 'New' : 'Available'}</span>
+        ${buildFavBtn(origIndex)}
+        ${m.unavailable ? '<div class="mc-unavailable-overlay"><span>Unavailable</span></div>' : ''}
+      </div>
+      <div class="mc-body">
+        <p class="mc-brand">${m.brand} · ${m.category}</p>
+        <h3 class="mc-title">${m.model}</h3>
+        ${m.unavailable ? '<div class="mc-unavailable-warning">⚠ This machine is no longer available for purchase.</div>' : '<p class="mc-sold-warning">⚠ Pre-owned — once sold, this machine will no longer be available.</p>'}
+        <ul class="mc-specs">
+          <li><span>Year</span><strong>${m.year}</strong></li>
+          <li><span>Condition</span><strong>${m.condition}</strong></li>
+          ${spec1}${spec2}
+        </ul>
+        ${m.unavailable
+          ? '<button class="btn btn-full" disabled style="opacity:0.4;cursor:not-allowed;background:var(--border);color:var(--ink-soft);border:none;">Not Available</button>'
+          : '<a href="#contact" class="btn btn-outline btn-sm">Request Info</a>'}
+      </div>`;
+    grid.appendChild(card);
+    card.querySelector('.fav-btn').addEventListener('click', () => {
+      toggleFavourite(origIndex);
+      renderFavourites();
+    });
+  });
+}
+
+// Open favourites modal
+document.getElementById('favNavLink').addEventListener('click', (e) => {
+  e.preventDefault();
+  renderFavourites();
+  document.getElementById('favOverlay').classList.remove('hidden');
+});
+
+// Close favourites modal
+document.getElementById('favClose').addEventListener('click', () => {
+  document.getElementById('favOverlay').classList.add('hidden');
+});
+document.getElementById('favOverlay').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('favOverlay'))
+    document.getElementById('favOverlay').classList.add('hidden');
+});
+
+// Init favourites
+updateFavNav();
+renderFavourites();
+
