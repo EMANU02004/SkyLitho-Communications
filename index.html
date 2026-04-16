@@ -25,6 +25,12 @@
       </ul>
       <div class="nav-actions">
         <a href="#contact" class="btn btn-primary">Get a Quote</a>
+        <a href="#favourites" class="fav-nav-btn" id="favNavLink" aria-label="Favourites">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span class="fav-nav-count" id="favNavCount"></span>
+        </a>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
         <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
           <span></span><span></span><span></span>
@@ -59,7 +65,7 @@
       </div>
       <div class="stat-divider"></div>
       <div class="stat fade-up delay-3">
-        <strong>3,200<sup>+</sup></strong>
+        <strong>1,200<sup>+</sup></strong>
         <span>Machines Traded</span>
       </div>
       <div class="stat-divider"></div>
@@ -90,6 +96,17 @@
     </div>
   </section>
  
+  <!-- ══ FAVOURITES MODAL ══ -->
+  <div id="favOverlay" class="admin-overlay hidden">
+    <div class="admin-modal">
+      <div class="admin-header">
+        <h3>My Favourites</h3>
+        <button class="admin-close" id="favClose" aria-label="Close">&times;</button>
+      </div>
+      <div id="favModalContent"></div>
+    </div>
+  </div>
+
   <!-- ══ SERVICES ══ -->
   <section class="services" id="services">
     <div class="container">
