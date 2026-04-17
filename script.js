@@ -329,6 +329,11 @@ function renderPublicMachines() {
 
     card.querySelector('.fav-btn').addEventListener('click', () => toggleFavourite(machineIndex));
 
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.fav-btn, .btn, .mc-arrow, .mc-dot, a')) return;
+      openMachineDetail(machineIndex);
+    });
+
     card.style.opacity   = '0';
     card.style.transform = 'translateY(16px)';
     card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
@@ -465,6 +470,93 @@ adminForm.addEventListener('submit', (e) => {
   setTimeout(() => { adminMsg.textContent = ''; }, 3000);
 });
 
+// ── Machine Detail Modal ─────────────────
+function openMachineDetail(machineIndex) {
+  const machines = getAdminMachines();
+  const m = machines[machineIndex];
+  if (!m) return;
+
+  const content = document.getElementById('machineDetailContent');
+
+  // Gallery
+  let galleryHTML;
+  if (m.images && m.images.length > 0) {
+    const imgs = m.images.map((src, i) =>
+      `<img class="md-slide${i === 0 ? ' active' : ''}" src="${src}" alt="${m.model}" />`
+    ).join('');
+    const counter = m.images.length > 1
+      ? `<span class="md-img-count">1 / ${m.images.length}</span>` : '';
+    const arrows = m.images.length > 1
+      ? `<div class="md-gallery-arrows">
+           <button class="md-arrow md-prev" aria-label="Previous">&#8249;</button>
+           <button class="md-arrow md-next" aria-label="Next">&#8250;</button>
+         </div>` : '';
+    const dots = m.images.length > 1
+      ? `<div class="md-gallery-dots">${m.images.map((_, i) =>
+          `<button class="md-dot${i === 0 ? ' active' : ''}" data-i="${i}" aria-label="Image ${i+1}"></button>`
+        ).join('')}</div>` : '';
+    galleryHTML = `<div class="md-gallery">${counter}${imgs}${arrows}${dots}</div>`;
+  } else {
+    galleryHTML = `<div class="md-gallery"><div class="md-graphic">${m.brand.substring(0,3).toUpperCase()}</div></div>`;
+  }
+
+  const specs = [
+    { label: 'Year',      val: m.year },
+    { label: 'Condition', val: m.condition },
+    m.spec1Label && m.spec1Val ? { label: m.spec1Label, val: m.spec1Val } : null,
+    m.spec2Label && m.spec2Val ? { label: m.spec2Label, val: m.spec2Val } : null,
+  ].filter(Boolean);
+
+  const specsHTML = specs.map(s =>
+    `<div class="md-spec"><span>${s.label}</span><strong>${s.val}</strong></div>`
+  ).join('');
+
+  const actionHTML = m.unavailable
+    ? '<button class="btn btn-full" disabled style="opacity:0.4;cursor:not-allowed;background:var(--border);color:var(--ink-soft);border:none;">Not Available</button>'
+    : `<a href="#contact" class="btn btn-primary" onclick="document.getElementById('machineDetailOverlay').classList.add('hidden')">Request Info</a>`;
+
+  content.innerHTML = `
+    ${galleryHTML}
+    <div class="md-body">
+      <p class="md-brand">${m.brand} · ${m.category}</p>
+      <div class="md-badge-row"><span class="md-badge ${m.badge}">${m.badge === 'new' ? 'New' : 'Available'}</span></div>
+      <h2 class="md-title">${m.model}</h2>
+      <div class="md-specs-grid">${specsHTML}</div>
+      <div class="md-actions">${actionHTML}</div>
+    </div>`;
+
+  document.getElementById('machineDetailOverlay').classList.remove('hidden');
+
+  // Init gallery slideshow
+  if (m.images && m.images.length > 1) {
+    const slides  = Array.from(content.querySelectorAll('.md-slide'));
+    const dots    = Array.from(content.querySelectorAll('.md-dot'));
+    const counter = content.querySelector('.md-img-count');
+    let current   = 0;
+
+    function mdGoTo(n) {
+      slides[current].classList.remove('active');
+      if (dots[current]) dots[current].classList.remove('active');
+      current = (n + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      if (dots[current]) dots[current].classList.add('active');
+      if (counter) counter.textContent = `${current + 1} / ${slides.length}`;
+    }
+
+    content.querySelector('.md-prev').addEventListener('click', () => mdGoTo(current - 1));
+    content.querySelector('.md-next').addEventListener('click', () => mdGoTo(current + 1));
+    dots.forEach((dot, i) => dot.addEventListener('click', () => mdGoTo(i)));
+  }
+}
+
+document.getElementById('machineDetailClose').addEventListener('click', () => {
+  document.getElementById('machineDetailOverlay').classList.add('hidden');
+});
+document.getElementById('machineDetailOverlay').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('machineDetailOverlay'))
+    document.getElementById('machineDetailOverlay').classList.add('hidden');
+});
+
 // Init
 renderPublicMachines();
 
@@ -551,7 +643,6 @@ function renderFavourites() {
       <div class="mc-body">
         <p class="mc-brand">${m.brand} · ${m.category}</p>
         <h3 class="mc-title">${m.model}</h3>
-        ${m.unavailable ? '<div class="mc-unavailable-warning">⚠ This machine is no longer available for purchase.</div>' : '<p class="mc-sold-warning">⚠ Pre-owned — once sold, this machine will no longer be available.</p>'}
         <ul class="mc-specs">
           <li><span>Year</span><strong>${m.year}</strong></li>
           <li><span>Condition</span><strong>${m.condition}</strong></li>
@@ -565,6 +656,10 @@ function renderFavourites() {
     card.querySelector('.fav-btn').addEventListener('click', () => {
       toggleFavourite(origIndex);
       renderFavourites();
+    });
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.fav-btn, .btn, .mc-arrow, .mc-dot, a')) return;
+      openMachineDetail(origIndex);
     });
   });
 }
