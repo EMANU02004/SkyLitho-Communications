@@ -2,7 +2,7 @@
 
 ## Project Structure
 
-```
+```text
 SKY/
 ├── README.md
 ├── frontend/
@@ -11,6 +11,8 @@ SKY/
 │   ├── script.js
 │   └── assets/
 └── backend/
+    ├── config/
+    │   └── config.js
     ├── auth/
     │   └── auth.js
     ├── database/
@@ -19,3 +21,4 @@ SKY/
     │   └── contact.js
     └── storage/
         └── images.js
+```
