@@ -170,7 +170,8 @@ const imgUploadZone     = document.getElementById('imgUploadZone');
 const imgInput          = document.getElementById('a-images');
 const imgPreviewGrid    = document.getElementById('imgPreviewGrid');
 
-let stagedImages = [];
+let stagedImages  = [];
+let editingIndex  = null;
 
 // ── Image upload ──────────────────────────
 imgUploadZone.addEventListener('click', () => imgInput.click());
@@ -187,13 +188,30 @@ imgUploadZone.addEventListener('drop', (e) => {
 });
 imgInput.addEventListener('change', () => readImageFiles(imgInput.files));
 
+function compressImage(dataUrl, callback) {
+  const img = new Image();
+  img.onload = () => {
+    const MAX_W = 1200, MAX_H = 900;
+    let w = img.width, h = img.height;
+    if (w > MAX_W) { h = Math.round(h * MAX_W / w); w = MAX_W; }
+    if (h > MAX_H) { w = Math.round(w * MAX_H / h); h = MAX_H; }
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    callback(canvas.toDataURL('image/jpeg', 0.82));
+  };
+  img.src = dataUrl;
+}
+
 function readImageFiles(files) {
   Array.from(files).forEach(file => {
     if (!file.type.startsWith('image/')) return;
     const reader = new FileReader();
     reader.onload = (e) => {
-      stagedImages.push(e.target.result);
-      renderImagePreviews();
+      compressImage(e.target.result, (compressed) => {
+        stagedImages.push(compressed);
+        renderImagePreviews();
+      });
     };
     reader.readAsDataURL(file);
   });
@@ -240,10 +258,7 @@ adminLoginForm.addEventListener('submit', (e) => {
 
 adminClose.addEventListener('click', () => {
   adminOverlay.classList.add('hidden');
-  adminForm.reset();
-  stagedImages = [];
-  imgPreviewGrid.innerHTML = '';
-  adminMsg.textContent = '';
+  resetAdminForm();
 });
 
 [adminOverlay, adminLoginOverlay].forEach(overlay => {
@@ -270,7 +285,14 @@ function getAdminMachines() {
   return JSON.parse(localStorage.getItem('adminMachines'));
 }
 function saveAdminMachines(machines) {
-  localStorage.setItem('adminMachines', JSON.stringify(machines));
+  try {
+    localStorage.setItem('adminMachines', JSON.stringify(machines));
+    return true;
+  } catch (e) {
+    adminMsg.textContent = 'Save failed: storage limit reached. Try using smaller/fewer images.';
+    adminMsg.className   = 'form-note error';
+    return false;
+  }
 }
 
 // ── Render public cards ───────────────────
@@ -364,85 +386,196 @@ function initSlideshow(card) {
 // ── Render admin list ─────────────────────
 function renderAdminList() {
   const machines = getAdminMachines();
+  const active   = machines.filter(m => !m.unavailable);
+  const sold     = machines.filter(m =>  m.unavailable);
+
   if (machines.length === 0) {
     adminList.innerHTML = '<p style="color:var(--ink-soft);font-size:14px;margin-top:16px;">No machines added yet.</p>';
     return;
   }
 
+  // ── Two-column layout ──
   adminList.innerHTML = `
-    <div class="admin-list-header">
-      <h4>Manage Machines (${machines.length})</h4>
-    </div>
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th>Image</th>
-          <th>Machine</th>
-          <th>Year</th>
-          <th>Condition</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="adminTableBody"></tbody>
-    </table>`;
+    <div class="admin-cols-wrap">
 
-  const tbody = document.getElementById('adminTableBody');
-  machines.forEach((m, i) => {
-    const thumb = m.images && m.images.length > 0
-      ? `<img src="${m.images[0]}" class="admin-thumb" alt="" />` : '<div class="admin-thumb-placeholder">' + m.brand.substring(0,3).toUpperCase() + '</div>';
+      <!-- Left: Active Listings -->
+      <div class="admin-col">
+        <div class="admin-col-header">
+          <h4>Manage Machines</h4>
+          <span class="admin-count">${active.length}</span>
+        </div>
+        ${active.length === 0
+          ? '<p class="admin-col-empty">No active listings.</p>'
+          : `<table class="admin-table">
+               <thead><tr>
+                 <th>Image</th><th>Machine</th><th>Year</th><th>Actions</th>
+               </tr></thead>
+               <tbody id="adminTableBody"></tbody>
+             </table>`
+        }
+      </div>
 
-    const isUnavailable = m.unavailable === true;
-    const statusLabel   = isUnavailable ? 'Not Available' : 'Available';
-    const statusClass   = isUnavailable ? 'status-unavailable' : 'status-available';
-    const toggleLabel   = isUnavailable ? 'Mark Available' : 'Mark Unavailable';
+      <!-- Right: Sold History -->
+      <div class="admin-col admin-col--history">
+        <div class="admin-col-header">
+          <h4>Sold History</h4>
+          <span class="admin-count admin-count--sold">${sold.length}</span>
+        </div>
+        ${sold.length === 0
+          ? '<p class="admin-col-empty">No sold machines yet.<br>Machines marked as sold will appear here.</p>'
+          : `<table class="admin-table admin-history-table">
+               <thead><tr>
+                 <th>Image</th><th>Machine</th><th>Sold</th><th>Actions</th>
+               </tr></thead>
+               <tbody id="historyTableBody"></tbody>
+             </table>`
+        }
+      </div>
 
-    const tr = document.createElement('tr');
-    tr.className = isUnavailable ? 'row-unavailable' : '';
-    tr.innerHTML = `
-      <td>${thumb}</td>
-      <td>
-        <strong>${m.brand} ${m.model}</strong>
-        <span class="admin-category">${m.category}</span>
-      </td>
-      <td>${m.year}</td>
-      <td>${m.condition}</td>
-      <td><span class="admin-status ${statusClass}">${statusLabel}</span></td>
-      <td class="admin-actions-cell">
-        <button class="admin-toggle-avail" data-index="${i}">${toggleLabel}</button>
-        <button class="admin-delete" data-index="${i}">Delete</button>
-      </td>`;
-    tbody.appendChild(tr);
-  });
+    </div>`;
 
-  // Toggle availability
-  tbody.querySelectorAll('.admin-toggle-avail').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const machines = getAdminMachines();
-      machines[Number(btn.dataset.index)].unavailable = !machines[Number(btn.dataset.index)].unavailable;
-      saveAdminMachines(machines);
-      renderAdminList();
-      renderPublicMachines();
+  // ── Populate active table ──
+  if (active.length > 0) {
+    const tbody = document.getElementById('adminTableBody');
+    active.forEach(m => {
+      const i     = machines.indexOf(m);
+      const thumb = m.images && m.images.length > 0
+        ? `<img src="${m.images[0]}" class="admin-thumb" alt="" />`
+        : `<div class="admin-thumb-placeholder">${m.brand.substring(0,3).toUpperCase()}</div>`;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${thumb}</td>
+        <td><strong>${m.brand} ${m.model}</strong><span class="admin-category">${m.category}</span></td>
+        <td>${m.year}</td>
+        <td class="admin-actions-cell">
+          <button class="admin-edit" data-index="${i}">Edit</button>
+          <button class="admin-toggle-avail" data-index="${i}">Mark Sold</button>
+          <button class="admin-delete" data-index="${i}">Delete</button>
+        </td>`;
+      tbody.appendChild(tr);
     });
-  });
 
-  // Delete
-  tbody.querySelectorAll('.admin-delete').forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (!confirm('Delete this machine?')) return;
-      const machines = getAdminMachines();
-      machines.splice(Number(btn.dataset.index), 1);
-      saveAdminMachines(machines);
-      renderAdminList();
-      renderPublicMachines();
+    tbody.querySelectorAll('.admin-edit').forEach(btn =>
+      btn.addEventListener('click', () => editMachine(Number(btn.dataset.index)))
+    );
+    tbody.querySelectorAll('.admin-toggle-avail').forEach(btn =>
+      btn.addEventListener('click', () => {
+        const ms = getAdminMachines();
+        ms[Number(btn.dataset.index)].unavailable = true;
+        ms[Number(btn.dataset.index)].soldAt = new Date().toISOString();
+        saveAdminMachines(ms);
+        renderAdminList();
+        renderPublicMachines();
+      })
+    );
+    tbody.querySelectorAll('.admin-delete').forEach(btn =>
+      btn.addEventListener('click', () => {
+        if (!confirm('Delete this machine?')) return;
+        const ms = getAdminMachines();
+        ms.splice(Number(btn.dataset.index), 1);
+        saveAdminMachines(ms);
+        renderAdminList();
+        renderPublicMachines();
+      })
+    );
+  }
+
+  // ── Populate history table ──
+  if (sold.length > 0) {
+    const histBody = document.getElementById('historyTableBody');
+    sold.forEach(m => {
+      const i        = machines.indexOf(m);
+      const soldDate = m.soldAt
+        ? new Date(m.soldAt).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
+        : '—';
+      const thumb = m.images && m.images.length > 0
+        ? `<img src="${m.images[0]}" class="admin-thumb admin-thumb--sold" alt="" />`
+        : `<div class="admin-thumb-placeholder admin-thumb-placeholder--sold">${m.brand.substring(0,3).toUpperCase()}</div>`;
+      const tr = document.createElement('tr');
+      tr.className = 'row-history';
+      tr.innerHTML = `
+        <td>${thumb}</td>
+        <td><strong>${m.brand} ${m.model}</strong><span class="admin-category">${m.category}</span></td>
+        <td><span class="history-sold-date">${soldDate}</span></td>
+        <td class="admin-actions-cell">
+          <button class="admin-restore" data-index="${i}">Restore</button>
+          <button class="admin-delete" data-index="${i}">Delete</button>
+        </td>`;
+      histBody.appendChild(tr);
     });
-  });
+
+    histBody.querySelectorAll('.admin-restore').forEach(btn =>
+      btn.addEventListener('click', () => {
+        const ms = getAdminMachines();
+        ms[Number(btn.dataset.index)].unavailable = false;
+        ms[Number(btn.dataset.index)].soldAt = null;
+        saveAdminMachines(ms);
+        renderAdminList();
+        renderPublicMachines();
+      })
+    );
+    histBody.querySelectorAll('.admin-delete').forEach(btn =>
+      btn.addEventListener('click', () => {
+        if (!confirm('Permanently delete this machine from history?')) return;
+        const ms = getAdminMachines();
+        ms.splice(Number(btn.dataset.index), 1);
+        saveAdminMachines(ms);
+        renderAdminList();
+        renderPublicMachines();
+      })
+    );
+  }
 }
 
-// ── Add machine submit ────────────────────
+// ── Edit machine ──────────────────────────
+function editMachine(index) {
+  const machines = getAdminMachines();
+  const m = machines[index];
+  if (!m) return;
+
+  editingIndex = index;
+
+  document.getElementById('a-brand').value       = m.brand       || '';
+  document.getElementById('a-category').value    = m.category    || '';
+  document.getElementById('a-model').value       = m.model       || '';
+  document.getElementById('a-year').value        = m.year        || '';
+  document.getElementById('a-condition').value   = m.condition   || '';
+  document.getElementById('a-badge').value       = m.badge       || 'available';
+  document.getElementById('a-spec1-label').value = m.spec1Label  || '';
+  document.getElementById('a-spec1-val').value   = m.spec1Val    || '';
+  document.getElementById('a-spec2-label').value = m.spec2Label  || '';
+  document.getElementById('a-spec2-val').value   = m.spec2Val    || '';
+
+  stagedImages = m.images ? [...m.images] : [];
+  renderImagePreviews();
+
+  document.getElementById('adminSubmitBtn').textContent = 'Update Machine';
+  document.getElementById('cancelEditBtn').style.display = 'block';
+  document.querySelector('#adminOverlay .admin-header h3').textContent = 'Admin — Edit Machine';
+  adminMsg.textContent = '';
+
+  document.getElementById('adminForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function resetAdminForm() {
+  editingIndex = null;
+  adminForm.reset();
+  stagedImages = [];
+  imgPreviewGrid.innerHTML = '';
+  document.getElementById('adminSubmitBtn').textContent = 'Add Machine';
+  document.getElementById('cancelEditBtn').style.display = 'none';
+  document.querySelector('#adminOverlay .admin-header h3').textContent = 'Admin — Manage Machines';
+  adminMsg.textContent = '';
+}
+
+document.getElementById('cancelEditBtn').addEventListener('click', resetAdminForm);
+
+// ── Add / Update machine submit ───────────
 adminForm.addEventListener('submit', (e) => {
   e.preventDefault();
-  const machine = {
+  const machines = getAdminMachines();
+
+  const data = {
     brand:      document.getElementById('a-brand').value.trim(),
     category:   document.getElementById('a-category').value.trim(),
     model:      document.getElementById('a-model').value.trim(),
@@ -456,18 +589,27 @@ adminForm.addEventListener('submit', (e) => {
     images:     [...stagedImages],
   };
 
-  const machines = getAdminMachines();
-  machines.push(machine);
-  saveAdminMachines(machines);
-  renderPublicMachines();
-  renderAdminList();
-
-  adminForm.reset();
-  stagedImages = [];
-  imgPreviewGrid.innerHTML = '';
-  adminMsg.textContent = 'Machine added successfully.';
-  adminMsg.className   = 'form-note success';
-  setTimeout(() => { adminMsg.textContent = ''; }, 3000);
+  if (editingIndex !== null) {
+    data.unavailable = machines[editingIndex].unavailable || false;
+    data.id          = machines[editingIndex].id;
+    machines[editingIndex] = data;
+    if (!saveAdminMachines(machines)) return;
+    renderPublicMachines();
+    renderAdminList();
+    resetAdminForm();
+    adminMsg.textContent = 'Machine updated successfully.';
+    adminMsg.className   = 'form-note success';
+    setTimeout(() => { adminMsg.textContent = ''; }, 3000);
+  } else {
+    machines.push(data);
+    if (!saveAdminMachines(machines)) return;
+    renderPublicMachines();
+    renderAdminList();
+    resetAdminForm();
+    adminMsg.textContent = 'Machine added successfully.';
+    adminMsg.className   = 'form-note success';
+    setTimeout(() => { adminMsg.textContent = ''; }, 3000);
+  }
 });
 
 // ── Machine Detail Modal ─────────────────
