@@ -1,7 +1,28 @@
 # Skylitho Communications
 
-Pre-owned printing machinery.
+Pre-owned printing machinery B2B website — Node.js/Express backend with JSON storage, vanilla JS frontend.
 
+## Quick Start
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Copy and configure environment
+cp .env.example .env
+# Edit .env — set ADMIN_PASSWORD and JWT_SECRET
+
+# 3. Start the server
+npm start        # production
+npm run dev      # development (auto-reload)
+```
+
+Open http://localhost:3000
+
+## Admin Panel
+
+Click the small **•** dot in the footer, enter your admin password.  
+First-time password (change via `.env`): `skylitho2024`
 
 ## Project Structure
 
