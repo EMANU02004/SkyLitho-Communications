@@ -1,5 +1,9 @@
 # Skylitho Communications
 
+<<<<<<< HEAD
+Pre-owned printing machinery.
+
+=======
 Pre-owned printing machinery B2B website — Node.js/Express backend with JSON storage, vanilla JS frontend.
 
 ## Quick Start
@@ -17,6 +21,7 @@ npm start        # production
 npm run dev      # development (auto-reload)
 ```
 
+>>>>>>> b47ae0d3d05374831916e4e2465b833f9fe00bbf
 ## Project Structure
 
 ```text
@@ -43,6 +48,40 @@ SKY/
         └── machines.js     ← GET/POST/PUT/DELETE /api/machines
 ```
 
+<<<<<<< HEAD
+## API Endpoints
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | /api/machines | — | List all machines |
+| GET | /api/machines/:id | — | Get single machine |
+| POST | /api/machines | Admin | Add machine |
+| PUT | /api/machines/:id | Admin | Update machine |
+| PATCH | /api/machines/:id/sold | Admin | Toggle sold status |
+| DELETE | /api/machines/:id | Admin | Delete machine |
+| POST | /api/auth/login | — | Login → returns JWT |
+| POST | /api/auth/verify | — | Verify JWT token |
+
+## Deploy to Render
+
+1. Push to GitHub
+2. Create a new **Web Service** on [render.com](https://render.com)
+3. Connect your repo — Render auto-detects `render.yaml`
+4. Set `ADMIN_PASSWORD` in the Render environment variables dashboard
+5. Deploy
+
+## Deploy with Docker
+
+```bash
+docker build -t skylitho .
+docker run -p 3000:3000 \
+  -e ADMIN_PASSWORD=yourpassword \
+  -e JWT_SECRET=yoursecret \
+  -v $(pwd)/data:/data \
+  skylitho
+```
+
+=======
 ## API Endpoints
 
 | Method | Path | Auth | Description |
@@ -67,3 +106,5 @@ docker run -p 3000:3000 \
   -v $(pwd)/data:/data \
   skylitho
 ```
+
+>>>>>>> b47ae0d3d05374831916e4e2465b833f9fe00bbf
