@@ -17,12 +17,6 @@ npm start        # production
 npm run dev      # development (auto-reload)
 ```
 
-Open http://localhost:3000
-
-## Admin Panel
-
-Click the small **•** dot in the footer, enter your admin password.  
-First-time password (change via `.env`): `skylitho2024`
 
 ## Project Structure
 
