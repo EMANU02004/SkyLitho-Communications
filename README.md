@@ -1,8 +1,5 @@
 # Skylitho Communications
 
-pre-owned printing machinery.
-
-=======
 Pre-owned printing machinery B2B website — Node.js/Express backend with JSON storage, vanilla JS frontend.
 
 ## Quick Start
