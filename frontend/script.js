@@ -99,12 +99,36 @@ window.addEventListener('scroll', () => {
     ? '0 2px 20px rgba(18,25,43,0.1)' : 'none';
 }, { passive: true });
 
-// ── EmailJS config — fill these in from emailjs.com ──
-const EMAILJS_SERVICE_ID  = 'service_d6o02l3';
-const EMAILJS_TEMPLATE_ID = 'template_fm0ziop';
-const EMAILJS_PUBLIC_KEY  = 'sDZCDIy6mUG1AzdTs';
+// ── Mail sender via FormSubmit (no account/key required) ──
+function sendMail(fields) {
+  // Build a readable plain-text body from all extra fields
+  const lines = [];
+  if (fields.company) lines.push(`Company: ${fields.company}`);
+  if (fields.machine) lines.push(`Machine of interest: ${fields.machine}`);
+  if (fields.message) lines.push(`\nMessage:\n${fields.message}`);
 
-emailjs.init(EMAILJS_PUBLIC_KEY);
+  const payload = {
+    name:     fields.name,
+    email:    fields.email,
+    _subject: fields.subject || `Skylitho enquiry from ${fields.name}`,
+    _replyto: fields.email,
+    _template: 'table',
+    message:  lines.join('\n') || fields.message || '',
+  };
+  if (fields.company) payload.company = fields.company;
+  if (fields.machine) payload.machine = fields.machine;
+
+  return fetch('https://formsubmit.co/ajax/skylitho@gmail.com', {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body:    JSON.stringify(payload),
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (!data.success) throw new Error(data.message || 'Submission failed');
+    return data;
+  });
+}
 
 // ── Contact Form ──────────────────────────
 const contactForm = document.getElementById('contactForm');
@@ -131,19 +155,23 @@ contactForm.addEventListener('submit', (e) => {
   submitBtn.disabled    = true;
   submitBtn.textContent = 'Sending…';
 
-  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-    from_name:    name,
-    from_email:   email,
-    company:      document.getElementById('company').value.trim(),
-    machine:      document.getElementById('machine').value.trim(),
-    message:      message,
-  }).then(() => {
-    formMsg.textContent   = 'Message sent! We\'ll be in touch shortly.';
+  sendMail({
+    subject: `Skylitho enquiry from ${name}`,
+    name,
+    email,
+    company: document.getElementById('company').value.trim(),
+    machine: document.getElementById('machine').value.trim(),
+    message,
+  })
+  .then(() => {
+    formMsg.textContent   = "Message sent! We'll be in touch shortly.";
     formMsg.className     = 'form-note success';
     contactForm.reset();
     submitBtn.disabled    = false;
     submitBtn.textContent = 'Send Message';
-  }).catch(() => {
+  })
+  .catch((err) => {
+    console.error('Contact send error:', err);
     formMsg.textContent   = 'Failed to send. Please email us directly at skylitho@gmail.com';
     formMsg.className     = 'form-note error';
     submitBtn.disabled    = false;
@@ -195,8 +223,24 @@ const imgUploadZone     = document.getElementById('imgUploadZone');
 const imgInput          = document.getElementById('a-images');
 const imgPreviewGrid    = document.getElementById('imgPreviewGrid');
 
-let stagedImages  = [];
-let editingIndex  = null;
+let stagedImages       = [];
+let editingIndex       = null;
+let pendingFavId       = null;
+let adminActiveTab     = 'manage';
+let _isInitialRender   = true;
+
+// ── Firebase config ───────────────────────────────────────────────────
+const FIREBASE_CONFIG = {
+  apiKey:            'AIzaSyANlJDGxz-uH9P5dklrs7EBq2x2yLXIrCg',
+  authDomain:        'skylitho-communications.firebaseapp.com',
+  databaseURL:       'https://skylitho-communications-default-rtdb.firebaseio.com',
+  projectId:         'skylitho-communications',
+  storageBucket:     'skylitho-communications.firebasestorage.app',
+  messagingSenderId: '833583774475',
+  appId:             '1:833583774475:web:73cc4bb66226f492e8000e',
+};
+let _firebaseDB   = null;
+let _firebaseAuth = null;
 
 // ── Image upload ──────────────────────────
 imgUploadZone.addEventListener('click', () => imgInput.click());
@@ -277,6 +321,8 @@ adminLoginForm.addEventListener('submit', async (e) => {
     loginMsg.textContent = '';
     adminOverlay.classList.remove('hidden');
     renderAdminList();
+    // Give this browser session write access to Firebase
+    if (_firebaseAuth) _firebaseAuth.signInAnonymously().catch(() => {});
   } else {
     loginMsg.textContent = 'Incorrect password.';
     loginMsg.className   = 'form-note error';
@@ -286,6 +332,8 @@ adminLoginForm.addEventListener('submit', async (e) => {
 adminClose.addEventListener('click', () => {
   adminOverlay.classList.add('hidden');
   resetAdminForm();
+  // Revoke write access when admin closes the panel
+  if (_firebaseAuth) _firebaseAuth.signOut().catch(() => {});
 });
 
 [adminOverlay, adminLoginOverlay].forEach(overlay => {
@@ -304,21 +352,84 @@ const DEFAULT_MACHINES = [
   { id:'d6', brand:'Komori',    category:'Sheet-Fed Offset',  model:'GL 640 C Hybrid',   year:'2016', condition:'Excellent', badge:'available', spec1Label:'Sheets',     spec1Val:'30M',         spec2Label:'Output',     spec2Val:'16,500 sph',    images:[], unavailable:false },
 ];
 
-function getAdminMachines() {
-  // Seed defaults on first load
-  if (!localStorage.getItem('adminMachines')) {
-    localStorage.setItem('adminMachines', JSON.stringify(DEFAULT_MACHINES));
-  }
-  return JSON.parse(localStorage.getItem('adminMachines'));
-}
-function saveAdminMachines(machines) {
+// In-memory cache — pre-seeded from localStorage for instant first render
+let machinesCache = (() => {
   try {
-    localStorage.setItem('adminMachines', JSON.stringify(machines));
-    return true;
-  } catch (e) {
-    adminMsg.textContent = 'Save failed: storage limit reached. Try using smaller/fewer images.';
-    adminMsg.className   = 'form-note error';
-    return false;
+    const s = localStorage.getItem('adminMachines');
+    if (s) return JSON.parse(s);
+  } catch (_) {}
+  localStorage.setItem('adminMachines', JSON.stringify(DEFAULT_MACHINES));
+  return [...DEFAULT_MACHINES];
+})();
+
+function getAdminMachines() {
+  return machinesCache;
+}
+
+function saveAdminMachines(machines) {
+  machinesCache = machines;
+  try { localStorage.setItem('adminMachines', JSON.stringify(machines)); } catch (_) {}
+  if (_firebaseDB) {
+    _firebaseDB.ref('machines').set({ v: 1, machines }).catch(err => {
+      adminMsg.textContent = 'Sync error — changes saved locally.';
+      adminMsg.className   = 'form-note error';
+      console.error('Firebase sync error:', err);
+    });
+  }
+  return true;
+}
+
+function _machineFingerprint(ms) {
+  return ms.map(m =>
+    [m.id || m.model, m.badge, m.unavailable, m.model, m.year, m.condition, (m.images || []).length].join(':')
+  ).join('|');
+}
+
+// Safely convert a Firebase snapshot value to a JS array.
+// We store data as { v: 1, machines: [...] } so an intentionally empty list
+// keeps the wrapper object alive and never becomes Firebase null.
+function _fbValToArray(val) {
+  if (!val) return [];
+  if (val.v !== undefined) {
+    // Wrapped format — val.machines may be an FB object, array, or undefined/null
+    const m = val.machines;
+    if (!m) return [];
+    return Array.isArray(m) ? m : Object.values(m);
+  }
+  // Legacy format (plain array/object written before wrapper was added)
+  return Array.isArray(val) ? val : Object.values(val);
+}
+
+function initFirebase() {
+  if (FIREBASE_CONFIG.apiKey === 'YOUR_API_KEY') return; // Not configured yet
+  try {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    _firebaseDB   = firebase.database();
+    _firebaseAuth = firebase.auth();
+    _firebaseDB.ref('machines').on('value', snapshot => {
+      const val = snapshot.val();
+      if (val !== null && val !== undefined) {
+        const fresh = _fbValToArray(val);
+        // Skip re-render when data hasn't actually changed
+        if (_machineFingerprint(fresh) === _machineFingerprint(machinesCache)) {
+          machinesCache = fresh;
+          try { localStorage.setItem('adminMachines', JSON.stringify(fresh)); } catch (_) {}
+          return;
+        }
+        machinesCache = fresh;
+        try { localStorage.setItem('adminMachines', JSON.stringify(fresh)); } catch (_) {}
+        renderPublicMachines();
+        if (!adminOverlay.classList.contains('hidden')) renderAdminList();
+      } else {
+        // Firebase null = true first-time (path was never written)
+        // Seed once and never re-inject after that
+        const seed = machinesCache.length > 0 ? machinesCache : DEFAULT_MACHINES;
+        _firebaseDB.ref('machines').set({ v: 1, machines: seed });
+      }
+    }, err => console.warn('Firebase listener error:', err));
+  } catch (err) {
+    console.warn('Firebase init failed, using localStorage only:', err);
+    _firebaseDB = null;
   }
 }
 
@@ -383,11 +494,14 @@ function renderPublicMachines() {
       openMachineDetail(machineIndex);
     });
 
-    card.style.opacity   = '0';
-    card.style.transform = 'translateY(16px)';
-    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-    sectionObserver.observe(card);
+    if (_isInitialRender) {
+      card.style.opacity   = '0';
+      card.style.transform = 'translateY(16px)';
+      card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      sectionObserver.observe(card);
+    }
   });
+  _isInitialRender = false;
 }
 
 function initSlideshow(card) {
@@ -421,9 +535,17 @@ function renderAdminList() {
     return;
   }
 
-  // ── Two-column layout ──
+  // ── Tab nav (mobile) + two-column layout (desktop) ──
   adminList.innerHTML = `
-    <div class="admin-cols-wrap">
+    <div class="admin-tabs">
+      <button class="admin-tab${adminActiveTab === 'manage' ? ' admin-tab--active' : ''}" data-target="manage">
+        Manage <span class="admin-count">${active.length}</span>
+      </button>
+      <button class="admin-tab${adminActiveTab === 'history' ? ' admin-tab--active' : ''}" data-target="history">
+        Sold History <span class="admin-count admin-count--sold">${sold.length}</span>
+      </button>
+    </div>
+    <div class="admin-cols-wrap" id="adminColsWrap" data-active-tab="${adminActiveTab}">
 
       <!-- Left: Active Listings -->
       <div class="admin-col">
@@ -460,6 +582,17 @@ function renderAdminList() {
       </div>
 
     </div>`;
+
+  // ── Tab switching ──
+  adminList.querySelectorAll('.admin-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      adminActiveTab = tab.dataset.target;
+      adminList.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('admin-tab--active'));
+      tab.classList.add('admin-tab--active');
+      const colsWrap = document.getElementById('adminColsWrap');
+      if (colsWrap) colsWrap.dataset.activeTab = adminActiveTab;
+    });
+  });
 
   // ── Populate active table ──
   if (active.length > 0) {
@@ -628,6 +761,7 @@ adminForm.addEventListener('submit', (e) => {
     adminMsg.className   = 'form-note success';
     setTimeout(() => { adminMsg.textContent = ''; }, 3000);
   } else {
+    data.id = 'm_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     machines.push(data);
     if (!saveAdminMachines(machines)) return;
     renderPublicMachines();
@@ -728,6 +862,7 @@ document.getElementById('machineDetailOverlay').addEventListener('click', (e) =>
 
 // Init
 renderPublicMachines();
+initFirebase(); // Connect to Firebase — pushes admin changes to all visitors in real-time
 
 // ── Favourites ──────────────────────────
 function getFavourites() {
@@ -745,12 +880,42 @@ function toggleFavourite(machineId) {
   const favs = getFavourites();
   const id   = String(machineId);
   const idx  = favs.indexOf(id);
-  if (idx === -1) favs.push(id);
-  else favs.splice(idx, 1);
+
+  if (idx !== -1) {
+    // Removing — act immediately, no modal needed
+    favs.splice(idx, 1);
+    saveFavourites(favs);
+    renderPublicMachines();
+    renderFavourites();
+    updateFavNav();
+  } else {
+    // Adding — open enquiry modal so the company gets notified
+    const machines    = getAdminMachines();
+    const m           = machines[machineId];
+    const machineName = m ? `${m.brand} ${m.model}` : 'this machine';
+    pendingFavId      = machineId;
+    document.getElementById('favEnquiryMachineName').textContent = machineName;
+    document.getElementById('favEnquiryMsg').textContent         = '';
+    document.getElementById('favEnquiryForm').reset();
+    document.getElementById('favEnquiryOverlay').classList.remove('hidden');
+  }
+}
+
+// Saves the pending favourite to localStorage and refreshes UI
+function commitFavourite() {
+  if (pendingFavId === null) return;
+  const favs = getFavourites();
+  const id   = String(pendingFavId);
+  if (!favs.includes(id)) favs.push(id);
   saveFavourites(favs);
+  pendingFavId = null;
   renderPublicMachines();
   renderFavourites();
   updateFavNav();
+}
+
+function closeFavEnquiry() {
+  document.getElementById('favEnquiryOverlay').classList.add('hidden');
 }
 
 function updateFavNav() {
@@ -761,6 +926,84 @@ function updateFavNav() {
   heartPath.setAttribute('fill', count > 0 ? '#e11d48' : 'none');
   document.getElementById('favNavLink').style.color = count > 0 ? '#e11d48' : '';
 }
+
+// ── Favourite Enquiry Modal ──────────────
+// X button — still saves the favourite (user showed interest by clicking the heart)
+document.getElementById('favEnquiryClose').addEventListener('click', () => {
+  commitFavourite();
+  closeFavEnquiry();
+});
+
+// "Just Save" button — save without sending
+document.getElementById('favEnquirySkip').addEventListener('click', () => {
+  commitFavourite();
+  closeFavEnquiry();
+});
+
+// Backdrop click — same as X
+document.getElementById('favEnquiryOverlay').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('favEnquiryOverlay')) {
+    commitFavourite();
+    closeFavEnquiry();
+  }
+});
+
+// Send Enquiry submit — email the owner then save
+document.getElementById('favEnquiryForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const name    = document.getElementById('fav-name').value.trim();
+  const email   = document.getElementById('fav-email').value.trim();
+  const company = document.getElementById('fav-company').value.trim();
+  const msg     = document.getElementById('favEnquiryMsg');
+
+  if (!name || !email) {
+    msg.textContent = 'Please fill in your name and email.';
+    msg.className   = 'form-note error';
+    return;
+  }
+  if (!isValidEmail(email)) {
+    msg.textContent = 'Please enter a valid email address.';
+    msg.className   = 'form-note error';
+    return;
+  }
+
+  const btn = document.getElementById('favEnquirySubmit');
+  btn.disabled    = true;
+  btn.textContent = 'Sending…';
+
+  const machines    = getAdminMachines();
+  const m           = pendingFavId !== null ? machines[pendingFavId] : null;
+  const machineName = m ? `${m.brand} ${m.model} (${m.year})` : 'Unknown machine';
+  const machineInfo = m
+    ? `Machine: ${m.brand} ${m.model}\nYear: ${m.year}\nCondition: ${m.condition}\nCategory: ${m.category}`
+    : 'Machine details unavailable';
+
+  sendMail({
+    subject: `Skylitho favourite enquiry — ${machineName}`,
+    name,
+    email,
+    company,
+    machine: machineName,
+    message: `${name} saved this machine as a favourite on the Skylitho website and is requesting more information.\n\n${machineInfo}`,
+  })
+  .then(() => {
+    msg.textContent = "Enquiry sent! We'll be in touch shortly.";
+    msg.className   = 'form-note success';
+    btn.disabled    = false;
+    btn.textContent = 'Send Enquiry';
+    commitFavourite();
+    setTimeout(closeFavEnquiry, 1800);
+  })
+  .catch((err) => {
+    console.error('Enquiry send error:', err);
+    msg.textContent = 'Could not send — machine saved. Please also use the contact form.';
+    msg.className   = 'form-note error';
+    btn.disabled    = false;
+    btn.textContent = 'Send Enquiry';
+    commitFavourite();
+  });
+});
 
 function buildFavBtn(machineId) {
   const active = isFavourited(machineId);

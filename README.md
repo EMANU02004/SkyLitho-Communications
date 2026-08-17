@@ -17,7 +17,7 @@ npm start        # production
 npm run dev      # development (auto-reload)
 ```
 
->>>>>>> b47ae0d3d05374831916e4e2465b833f9fe00bbf
+
 ## Project Structure
 
 ```text

@@ -1,9 +1,3 @@
-/* ════════════════════════════════════════════
-   Skylitho Communications — style.css
-   Theme: Clean · Light · Professional
-   Fonts: Playfair Display + Outfit
-════════════════════════════════════════════ */
- 
 :root {
   --sky:       #1a6fc4;
   --sky-light: #e8f1fb;
@@ -49,6 +43,7 @@ body {
   color: var(--ink);
   background: var(--white);
   -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
 }
 img { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
@@ -602,7 +597,7 @@ em { font-style: italic; color: #7ab8f5; }
 }
 .about-visual { position: relative; }
 .about-card {
-  background: var(--white);
+  background: #ffffff;
   border-radius: var(--radius);
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
@@ -614,41 +609,17 @@ em { font-style: italic; color: #7ab8f5; }
 }
 .about-graphic {
   position: relative;
-  width: 180px;
-  height: 180px;
+  width: 88%;
+  height: 88%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.ag-ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 1.5px solid;
-  animation: spin 12s linear infinite;
-}
-.r1 {
-  width: 180px; height: 180px;
-  border-color: rgba(26,111,196,0.12);
-  animation-duration: 20s;
-}
-.r2 {
-  width: 120px; height: 120px;
-  border-color: rgba(26,111,196,0.22);
-  animation-duration: 14s;
-  animation-direction: reverse;
-}
-.r3 {
-  width: 70px; height: 70px;
-  border-color: rgba(26,111,196,0.4);
-  animation-duration: 9s;
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-.ag-label {
-  font-size: 28px;
-  color: var(--sky);
-  z-index: 1;
+.about-map {
+  width: 100%;
+  height: 100%;
+  max-width: 380px;
+  object-fit: contain;
 }
 .about-stat-card {
   position: absolute;
@@ -892,56 +863,6 @@ em { font-style: italic; color: #7ab8f5; }
 .footer-legal a { font-size: 13px; color: rgba(255,255,255,0.35); transition: color var(--transition); }
 .footer-legal a:hover { color: rgba(255,255,255,0.75); }
  
-/* ══════════════════════════════════════════
-   RESPONSIVE
-══════════════════════════════════════════ */
-@media (max-width: 1024px) {
-  .machines-grid { grid-template-columns: repeat(2, 1fr); }
-  .services-grid { grid-template-columns: repeat(2, 1fr); }
-  .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
-}
- 
-@media (max-width: 768px) {
-  .container { padding-inline: 20px; }
-  .nav-links { display: none; }
-  .nav-toggle { display: flex; }
-  .nav-links.open {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 68px;
-    left: 0;
-    right: 0;
-    background: var(--white);
-    padding: 24px 20px;
-    border-bottom: 1px solid var(--border);
-    gap: 20px;
-    z-index: 199;
-    box-shadow: var(--shadow);
-  }
-  .hero-inner { grid-template-columns: 1fr; padding-bottom: 0; }
-  .hero-visual { display: none; }
-  .hero { padding-bottom: 0; }
-  .hero-stats { flex-wrap: wrap; }
-  .stat { flex: 1 1 40%; }
-  .stat-divider { display: none; }
-  .about-inner { grid-template-columns: 1fr; gap: 48px; }
-  .about-stat-card { right: 0; bottom: -16px; }
-  .contact-inner { grid-template-columns: 1fr; gap: 40px; }
-  .form-row { grid-template-columns: 1fr; }
-  .machines-grid { grid-template-columns: 1fr; }
-  .services-grid { grid-template-columns: 1fr; }
-  .newsletter-inner { flex-direction: column; align-items: flex-start; }
-  .section-header { flex-direction: column; align-items: flex-start; }
-}
- 
-@media (max-width: 480px) {
-  .footer-top { grid-template-columns: 1fr; }
-  .hero-actions { flex-direction: column; }
-  .btn { width: 100%; justify-content: center; }
-  .brands-row { gap: 8px; }
-}
-
 /* ══════════════════════════════════════════
    ADMIN PANEL
 ══════════════════════════════════════════ */
@@ -1257,6 +1178,36 @@ em { font-style: italic; color: #7ab8f5; }
   width: 100%;
   height: 300px;
 }
+
+/* ── Admin section tabs (mobile/tablet) ── */
+.admin-tabs {
+  display: none;
+  border-bottom: 2px solid var(--border);
+  margin-top: 20px;
+}
+.admin-tab {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  background: none;
+  color: var(--ink-soft);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: color var(--transition), border-color var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.admin-tab.admin-tab--active {
+  color: var(--sky);
+  border-bottom-color: var(--sky);
+}
+.admin-tab:hover:not(.admin-tab--active) { color: var(--ink-mid); }
 
 /* ── Admin Machine Table ── */
 .admin-list-header {
@@ -1754,3 +1705,156 @@ em { font-style: italic; color: #7ab8f5; }
 .md-actions { display: flex; gap: 12px; }
 [data-theme="dark"] .machine-detail-modal { background: #1e2a42; }
 [data-theme="dark"] .md-spec { background: #141b2d; }
+
+/* ── Favourite Enquiry Modal ── */
+.fav-enquiry-sub {
+  font-size: 14px;
+  color: var(--ink-mid);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+.fav-enquiry-sub strong { color: var(--ink); }
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+   (placed last so these overrides win the cascade
+   against every unconditional rule above)
+══════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .machines-grid { grid-template-columns: repeat(2, 1fr); }
+  .services-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+  /* Admin: stack Manage Machines above Sold History (avoids side-by-side overlap on narrow screens) */
+  .admin-cols-wrap { grid-template-columns: 1fr; row-gap: 28px; border-top: none; padding-top: 16px; margin-top: 0; }
+  .admin-col { padding: 0; min-width: 0; overflow-x: auto; }
+  .admin-col--history { padding: 20px 0 0; border-left: none; border-top: 1px solid var(--border); }
+}
+
+@media (max-width: 768px) {
+  .container { padding-inline: 20px; }
+
+  /* Nav — hide "Get a Quote" to prevent overflow */
+  .nav-links { display: none; }
+  .nav-toggle { display: flex; }
+  .nav-actions .btn-primary { display: none; }
+  .nav-links.open {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 68px;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    padding: 24px 20px;
+    border-bottom: 1px solid var(--border);
+    gap: 20px;
+    z-index: 199;
+    box-shadow: var(--shadow);
+  }
+
+  /* Hero */
+  .hero-inner { grid-template-columns: 1fr; padding-bottom: 0; }
+  .hero-visual { display: none; }
+  .hero { padding-bottom: 0; }
+  .hero-stats { flex-wrap: wrap; }
+  .stat { flex: 1 1 40%; }
+  .stat-divider { display: none; }
+
+  /* Reduce section vertical padding on mobile */
+  .machines, .services, .about, .contact { padding: 64px 0; }
+  .brands { padding: 44px 0; }
+
+  /* About — add bottom clearance for the absolute stat card */
+  .about-inner { grid-template-columns: 1fr; gap: 40px; }
+  .about-visual { padding-bottom: 32px; }
+  .about-stat-card { right: 0; bottom: -16px; }
+
+  /* Contact & forms */
+  .contact-inner { grid-template-columns: 1fr; gap: 40px; }
+  .form-row { grid-template-columns: 1fr; }
+
+  /* Grids */
+  .machines-grid { grid-template-columns: 1fr; }
+  .services-grid { grid-template-columns: 1fr; }
+
+  /* Misc layout */
+  .newsletter-inner { flex-direction: column; align-items: flex-start; }
+  .section-header { flex-direction: column; align-items: flex-start; }
+
+  /* iOS: prevent zoom on input focus (font-size < 16px triggers it) */
+  .field input,
+  .field textarea,
+  .field select { font-size: 16px; }
+
+  /* Admin modal */
+  .admin-modal { padding: 20px 16px; min-width: 0; }
+  .admin-cols-wrap, .admin-list { min-width: 0; }
+
+  /* Machine detail modal */
+  .machine-detail-modal { max-height: 95vh; }
+  .md-gallery { height: 240px; }
+  .md-body { padding: 20px 20px 28px; }
+  .md-title { font-size: 22px; }
+}
+
+/* Admin machine table — keep rows/buttons on one line; the column scrolls horizontally instead of wrapping */
+@media (max-width: 640px) {
+  .admin-table { font-size: 12px; }
+  .admin-table th,
+  .admin-table td { padding: 8px 10px; white-space: nowrap; }
+  .admin-table th { font-size: 10px; }
+  .admin-category { white-space: nowrap; }
+  .admin-thumb,
+  .admin-thumb-placeholder { width: 32px; height: 32px; }
+  .admin-actions-cell { flex-wrap: nowrap; }
+  .admin-edit,
+  .admin-delete,
+  .admin-restore,
+  .admin-toggle-avail { white-space: nowrap; }
+}
+
+@media (max-width: 480px) {
+  .container { padding-inline: 16px; }
+
+  /* Smaller nav height on tiny phones */
+  .nav { height: 60px; }
+  .nav-links.open { top: 60px; }
+
+  /* Footer */
+  .footer-top { grid-template-columns: 1fr; }
+  .footer { padding-top: 40px; }
+
+  /* Hero */
+  .hero-actions { flex-direction: column; }
+  .btn { width: 100%; justify-content: center; }
+
+  /* Stats — go single-column on very small screens */
+  .stat { flex: 1 1 100%; }
+
+  /* Section spacing */
+  .machines, .services, .about, .contact { padding: 48px 0; }
+  .brands { padding: 36px 0; }
+
+  /* Brands */
+  .brands-row { gap: 8px; }
+
+  /* About stat card — pull out of absolute flow so it doesn't overflow */
+  .about-visual { padding-bottom: 0; }
+  .about-stat-card {
+    position: relative;
+    bottom: auto;
+    right: auto;
+    margin-top: 16px;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Machine detail modal */
+  .md-gallery { height: 190px; }
+  .md-body { padding: 16px 16px 24px; }
+  .md-title { font-size: 20px; }
+  .md-specs-grid { grid-template-columns: 1fr 1fr; }
+
+  /* Favourites modal */
+  .fav-modal-grid { grid-template-columns: 1fr; }
+}
