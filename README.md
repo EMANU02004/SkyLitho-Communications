@@ -1,7 +1,6 @@
 # Skylitho Communications
 
-<<<<<<< HEAD
-Pre-owned printing machinery.
+pre-owned printing machinery.
 
 =======
 Pre-owned printing machinery B2B website — Node.js/Express backend with JSON storage, vanilla JS frontend.
@@ -48,7 +47,7 @@ SKY/
         └── machines.js     ← GET/POST/PUT/DELETE /api/machines
 ```
 
-<<<<<<< HEAD
+
 ## API Endpoints
 
 | Method | Path | Auth | Description |
@@ -106,5 +105,3 @@ docker run -p 3000:3000 \
   -v $(pwd)/data:/data \
   skylitho
 ```
-
->>>>>>> b47ae0d3d05374831916e4e2465b833f9fe00bbf
