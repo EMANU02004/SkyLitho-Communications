@@ -1866,8 +1866,15 @@ em { font-style: italic; color: #7ab8f5; }
   .footer { padding-top: 40px; }
 
   /* Hero */
-  .hero-actions { flex-direction: column; }
   .btn { width: 100%; justify-content: center; }
+  .hero-actions { flex-direction: row; flex-wrap: nowrap; gap: 10px; }
+  .hero-actions .btn {
+    width: auto;
+    flex: 1 1 0;
+    padding: 13px 10px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
 
   /* Stats — go single-column on very small screens */
   .stat { flex: 1 1 100%; }
