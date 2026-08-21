@@ -44,6 +44,17 @@ navLinks.querySelectorAll('a').forEach(link => {
   });
 });
 
+// ── Hero background slideshow ──────────────
+const heroSlides = document.querySelectorAll('#heroBgSlides .hero-bg-slide');
+if (heroSlides.length > 1) {
+  let heroSlideIndex = 0;
+  setInterval(() => {
+    heroSlides[heroSlideIndex].classList.remove('active');
+    heroSlideIndex = (heroSlideIndex + 1) % heroSlides.length;
+    heroSlides[heroSlideIndex].classList.add('active');
+  }, 6000);
+}
+
 // ── Scroll-triggered fade-in ───────────────
 const observer = new IntersectionObserver(
   (entries) => {

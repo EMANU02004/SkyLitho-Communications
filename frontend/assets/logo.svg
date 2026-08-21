@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="skylithoLogoTitle">
+  <title id="skylithoLogoTitle">Skylitho Communications</title>
+  <defs>
+    <linearGradient id="gearFill" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f4f6f9"/>
+      <stop offset="55%" stop-color="#c9d1dc"/>
+      <stop offset="100%" stop-color="#98a4b5"/>
+    </linearGradient>
+    <linearGradient id="boltFill" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5fb2f7"/>
+      <stop offset="48%" stop-color="#1a6fc4"/>
+      <stop offset="100%" stop-color="#0d3f73"/>
+    </linearGradient>
+  </defs>
+  <style>
+    svg { --gear-line: #7a8699; }
+    @media (prefers-color-scheme: dark) {
+      svg { --gear-line: #aab4c4; }
+    }
+  </style>
+
+  <path d="M 217.43,109.42 L 217.43,130.58 L 200.70,134.52 L 200.80,133.96 L 215.17,143.38 L 207.93,163.27 L 190.87,161.25 L 191.16,160.75 L 201.44,174.52 L 187.83,190.73 L 172.49,183.00 L 172.93,182.63 L 177.88,199.08 L 159.55,209.67 L 147.78,197.15 L 148.31,196.96 L 147.34,214.11 L 126.49,217.78 L 119.71,202.00 L 120.29,202.00 L 113.51,217.78 L 92.66,214.11 L 91.69,196.96 L 92.22,197.15 L 80.45,209.67 L 62.12,199.08 L 67.07,182.63 L 67.51,183.00 L 52.17,190.73 L 38.56,174.52 L 48.84,160.75 L 49.13,161.25 L 32.07,163.27 L 24.83,143.38 L 39.20,133.96 L 39.30,134.52 L 22.57,130.58 L 22.57,109.42 L 39.30,105.48 L 39.20,106.04 L 24.83,96.62 L 32.07,76.73 L 49.13,78.75 L 48.84,79.25 L 38.56,65.48 L 52.17,49.27 L 67.51,57.00 L 67.07,57.37 L 62.12,40.92 L 80.45,30.33 L 92.22,42.85 L 91.69,43.04 L 92.66,25.89 L 113.51,22.22 L 120.29,38.00 L 119.71,38.00 L 126.49,22.22 L 147.34,25.89 L 148.31,43.04 L 147.78,42.85 L 159.55,30.33 L 177.88,40.92 L 172.93,57.37 L 172.49,57.00 L 187.83,49.27 L 201.44,65.48 L 191.16,79.25 L 190.87,78.75 L 207.93,76.73 L 215.17,96.62 L 200.80,106.04 L 200.70,105.48 Z" fill="url(#gearFill)" stroke="#818ea0" stroke-width="1.5" stroke-linejoin="round"/>
+  <circle cx="120" cy="120" r="60" fill="none" stroke="var(--gear-line)" stroke-width="1" stroke-dasharray="2 4" opacity="0.6"/>
+  <circle cx="120" cy="120" r="70" fill="none" stroke="var(--gear-line)" stroke-width="0.75" opacity="0.35"/>
+  <line x1="174.00" y1="120.00" x2="186.00" y2="120.00" stroke="var(--gear-line)" stroke-width="1" opacity="0.5"/>
+    <line x1="158.18" y1="158.18" x2="166.67" y2="166.67" stroke="var(--gear-line)" stroke-width="1" opacity="0.5"/>
+    <line x1="120.00" y1="174.00" x2="120.00" y2="186.00" stroke="var(--gear-line)" stroke-width="1" opacity="0.5"/>
+    <line x1="81.82" y1="158.18" x2="73.33" y2="166.67" stroke="var(--gear-line)" stroke-width="1" opacity="0.5"/>
+    <line x1="66.00" y1="120.00" x2="54.00" y2="120.00" stroke="var(--gear-line)" stroke-width="1" opacity="0.5"/>
+    <line x1="81.82" y1="81.82" x2="73.33" y2="73.33" stroke="var(--gear-line)" stroke-width="1" opacity="0.5"/>
+    <line x1="120.00" y1="66.00" x2="120.00" y2="54.00" stroke="var(--gear-line)" stroke-width="1" opacity="0.5"/>
+    <line x1="158.18" y1="81.82" x2="166.67" y2="73.33" stroke="var(--gear-line)" stroke-width="1" opacity="0.5"/>
+  <circle cx="171.60" cy="120.00" r="1.4" fill="var(--gear-line)" opacity="0.55"/>
+    <circle cx="164.69" cy="145.80" r="1.4" fill="var(--gear-line)" opacity="0.55"/>
+    <circle cx="145.80" cy="164.69" r="1.4" fill="var(--gear-line)" opacity="0.55"/>
+    <circle cx="120.00" cy="171.60" r="1.4" fill="var(--gear-line)" opacity="0.55"/>
+    <circle cx="94.20" cy="164.69" r="1.4" fill="var(--gear-line)" opacity="0.55"/>
+    <circle cx="75.31" cy="145.80" r="1.4" fill="var(--gear-line)" opacity="0.55"/>
+    <circle cx="68.40" cy="120.00" r="1.4" fill="var(--gear-line)" opacity="0.55"/>
+    <circle cx="75.31" cy="94.20" r="1.4" fill="var(--gear-line)" opacity="0.55"/>
+    <circle cx="94.20" cy="75.31" r="1.4" fill="var(--gear-line)" opacity="0.55"/>
+    <circle cx="120.00" cy="68.40" r="1.4" fill="var(--gear-line)" opacity="0.55"/>
+    <circle cx="145.80" cy="75.31" r="1.4" fill="var(--gear-line)" opacity="0.55"/>
+    <circle cx="164.69" cy="94.20" r="1.4" fill="var(--gear-line)" opacity="0.55"/>
+
+  <path d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z" transform="translate(52.80,52.80) scale(5.6)" fill="url(#boltFill)" stroke="#0a2f57" stroke-width="0.18" stroke-linejoin="round"/>
+</svg>
